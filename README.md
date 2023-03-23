@@ -9,7 +9,7 @@ So i added a number of timeouts so that it would automatically retry, and throw 
 Install using npm:
 
 ```
-npm install openai-chat-gpt
+npm install streamed-chatgpt-api
 ```
 
 ## Usage

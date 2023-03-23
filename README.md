@@ -17,7 +17,7 @@ npm install streamed-chatgpt-api
 To use the module, first import it:
 
 ```js
-const { fetchStreamedChat } = require('openai-chat-gpt');
+const { fetchStreamedChat } = require('streamed-chatgpt-api');
 ```
 
 Then call the `fetchStreamedChat` function with your options and a callback function to process the streamed response.  This is the simplest example, you can pass in an OpenAI API key and a single string as a prompt:

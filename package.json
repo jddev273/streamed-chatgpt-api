@@ -23,5 +23,9 @@
   },
   "devDependencies": {
     "jest": "^29.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jddev273/streamed-chatgpt-api"
   }
 }

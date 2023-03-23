@@ -1,6 +1,6 @@
 {
   "name": "streamed-chatgpt-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple module for the server-side allowing you to connect to the ChatGPT and receive the response back in chunks so you can stream the response to the user.",
   "main": "index.js",
   "scripts": {

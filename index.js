@@ -51,9 +51,11 @@ async function fetchStreamedChat(options, onChunkReceived) {
     const startTime = Date.now();
 
     async function checkTotalTime() {
-        return new Promise((_, reject) => {
+        return new Promise((resolve, reject) => {
             if (Date.now() - startTime >= totalTime) {
                 reject(new Error('Total timeout reached'));
+            } else {
+                resolve();
             }
         });
     }
@@ -105,7 +107,6 @@ async function fetchStreamedChat(options, onChunkReceived) {
             await processStream(reader, decoder, onChunkReceived);
         } catch (error) {
             console.error('Error reading stream:', error);
-            reader.cancel();
         }
     }
 
@@ -124,6 +125,7 @@ async function fetchStreamedChat(options, onChunkReceived) {
                         body: options.body, // Use the body from options
                     }),
                     timeout(options.fetchTimeout), // Use the fetchTimeout from options
+                    timeout(options.fetchTimeout),
                 ]);
 
                 if (response.ok) {
@@ -131,6 +133,9 @@ async function fetchStreamedChat(options, onChunkReceived) {
                 }
             } catch (error) {
                 console.error('Error fetching chat:', error);
+                if (i === retryCount - 1) {
+                    throw new Error(`Failed to fetch chat after ${retryCount} retry attempts`);
+                }
             }
             await new Promise(resolve => setTimeout(resolve, options.retryInterval)); // Use the retryInterval from options
             await checkTotalTime(); // Check if the total timeout has been reached

@@ -4,7 +4,7 @@ At Streamed ChatGPT API With Node, we take security seriously. We appreciate any
 
 ## Reporting a Vulnerability
 
-If you believe you have discovered a security vulnerability in Streamed ChatGPT API With Node, please report it to us by emailing q5izxwu7+support=npmjs.com@anonaddy.me with a detailed description of the vulnerability and any steps necessary to reproduce it.
+If you believe you have discovered a security vulnerability in Streamed ChatGPT API With Node, please report it to us by emailing q5izxwu7@anonaddy.me with a detailed description of the vulnerability and any steps necessary to reproduce it.
 
 We will investigate and respond to any security issues as quickly as possible. Please do not disclose any security vulnerabilities publicly until we have had a chance to review and address them.
 

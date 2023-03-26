@@ -5,6 +5,29 @@ async function timeout(ms) {
     return new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
 }
 
+async function fetchStreamedChatContent(options, onResponse = null, onFinish = null, onError = null) {
+
+    try {
+        await fetchStreamedChat(
+            options,
+            (responseChunk) => {
+                const content = JSON.parse(responseChunk).choices[0].delta.content;
+                if (content && onResponse) {
+                    onResponse(content);
+                }
+            }
+        );
+
+        if (onFinish) {
+            onFinish();
+        }
+    } catch (error) {
+        if (onError) {
+            onError(error);
+        }
+    }
+}
+
 // The main function to fetch a streamed chat response and process it
 async function fetchStreamedChat(options, onChunkReceived) {
     const {
@@ -160,5 +183,5 @@ async function fetchStreamedChat(options, onChunkReceived) {
     await processStream(reader, decoder, onChunkReceived);
 }
 
-module.exports = { fetchStreamedChat };
+module.exports = { fetchStreamedChat, fetchStreamedChatContent };
 

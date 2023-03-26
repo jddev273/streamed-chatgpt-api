@@ -1,8 +1,10 @@
 # Streamed ChatGPT API With Node
 
-A Node.js module for streaming ChatGPT API responses using the OpenAI API.  I created this because I had issues with another module, it kept freezing, which was unacceptable for the user.  
+A Node.js module for streaming ChatGPT API responses using the OpenAI API. Streamed ChatGPT API allows users to fetch AI-generated responses in real-time. This module was created due to issues with other modules that were causing freezing, which provided a poor user experience. Various timeouts have been implemented to automatically retry and throw errors in case of disconnections.
 
-So i added a number of timeouts so that it would automatically retry, and throw an error if things got disconnected.
+## Introduction
+
+ChatGPT is an advanced AI language model developed by OpenAI. This module enables you to interact with the ChatGPT API, allowing you to send messages and receive AI-generated responses in real-time. The OpenAI API provides access to various models, including the gpt-3.5-turbo model, which is used by default in this module.
 
 ## Installation
 
@@ -17,7 +19,7 @@ npm install streamed-chatgpt-api
 To use the module, first import it:
 
 ```js
-const { fetchStreamedChat } = require('streamed-chatgpt-api');
+const { fetchStreamedChat, fetchStreamedChatContent } = require('streamed-chatgpt-api');
 ```
 
 Then call the `fetchStreamedChat` function with your options and a callback function to process the streamed response.  This is the simplest example, you can pass in an OpenAI API key and a single string as a prompt:
@@ -57,13 +59,36 @@ fetchStreamedChat({
 });
 ```
 
+### Using fetchStreamedChatContent
+
+The `fetchStreamedChatContent` function is a higher-level function that simplifies the process of fetching the generated content by not requiring you to deal with individual chunks. It takes the same options as `fetchStreamedChat` but also accepts three optional callback functions, `onResponse`, `onFinish`, and `onError`.
+
+```js
+const apiKey = 'your_api_key_here';
+
+fetchStreamedChatContent({
+    apiKey,
+    messageInput: 'Hello, how are you?',
+}, (content) => {
+    // onResponse
+    process.stdout.write(content);
+}, () => {
+    // onFinish
+    console.log('Chat completed');
+}, (error) => {
+    // onError
+    console.error('Error:', error);
+});
+
+```
+
 You can specify the same options as specified in OpenAI's chat completion reference.
 
 Here is a table of the parameters below.  Only the API key and messageInput (prompt) are required.  By default the gpt-3.5-turbo is used.
 
 ### Options
 
-The following options are available for the `fetchStreamedChat` function:
+The following options are available for the `fetchStreamedChat` and `fetchStreamedChatContent` functions:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |

@@ -8,7 +8,7 @@ ChatGPT is an advanced AI language model developed by OpenAI. This module enable
 
 ## Usage Example
 
-A simple node web app showing usage of the module with streamed chat can be found here: [Streamed ChatGPT API Usage Example](https://github.com/jddev273/streamed-chatgpt-api)
+A simple node web app showing usage of the module with streamed chat can be found here: [Streamed ChatGPT API Usage Example](https://github.com/jddev273/simple-chatgpt-chat-streaming-demo)
 
 ## Installation
 

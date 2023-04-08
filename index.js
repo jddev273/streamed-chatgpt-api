@@ -10,10 +10,10 @@ async function fetchStreamedChatContent(options, onResponse = null, onFinish = n
     try {
         await fetchStreamedChat(
             options,
-            (responseChunk) => {
+            (responseChunk, reader) => {
                 const content = JSON.parse(responseChunk).choices[0].delta.content;
                 if (content && onResponse) {
-                    onResponse(content);
+                    onResponse(content, reader);
                 }
             }
         );
@@ -125,7 +125,7 @@ async function fetchStreamedChat(options, onChunkReceived) {
                 }
 
                 // Otherwise, invoke the onChunkReceived callback with the message
-                onChunkReceived(message);
+                onChunkReceived(message, reader);
             }
 
             // Continue processing the stream recursively

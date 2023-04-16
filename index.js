@@ -1,4 +1,4 @@
-const fetch = globalThis.fetch || require('node-fetch');
+const fetch = globalThis.fetch || require('node-fetch-native');
 
 // A utility function to create a promise that rejects after a specified timeout
 async function timeout(ms) {

@@ -86,6 +86,91 @@ async function fetchStreamedChat(options, onChunkReceived) {
         });
     }
 
+    // A function to process the response stream from node-fetch using Node.js stream methods
+    async function processNodeStream(readableStream, decoder, onChunkReceived) {
+        try {
+            // Set up event listeners for the Node.js readable stream
+            return new Promise((resolve, reject) => {
+                let buffer = '';
+                
+                // Setup read timeout timer
+                let readTimeoutId = null;
+                const resetReadTimeout = () => {
+                    if (readTimeoutId) clearTimeout(readTimeoutId);
+                    readTimeoutId = setTimeout(() => {
+                        reject(new Error('Timeout'));
+                    }, readTimeout);
+                };
+                
+                // Initial timeout
+                resetReadTimeout();
+                
+                // Set up total time timeout
+                const totalTimeoutPromise = totalTimeTimeout();
+                totalTimeoutPromise.catch(reject);
+
+                readableStream.on('data', (chunk) => {
+                    try {
+                        // Reset read timeout when data is received
+                        resetReadTimeout();
+                        
+                        // Decode the chunk and add it to the buffer
+                        const textChunk = decoder.decode(chunk, { stream: true });
+                        buffer += textChunk;
+
+                        // Process complete lines
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop(); // Keep the last potentially incomplete line in the buffer
+
+                        // Process each complete line
+                        for (const line of lines) {
+                            if (line.trim() === '') continue;
+
+                            // Remove the "data: " prefix from the line
+                            const message = line.replace(/^data: /, '');
+
+                            // If the message indicates the end of the stream, resolve
+                            if (message === '[DONE]') {
+                                if (readTimeoutId) clearTimeout(readTimeoutId);
+                                resolve();
+                                return;
+                            }
+
+                            // Otherwise, invoke the onChunkReceived callback with the message
+                            onChunkReceived(message);
+                        }
+                    } catch (error) {
+                        if (readTimeoutId) clearTimeout(readTimeoutId);
+                        reject(error);
+                    }
+                });
+
+                readableStream.on('end', () => {
+                    // Clear timeout when stream ends
+                    if (readTimeoutId) clearTimeout(readTimeoutId);
+                    
+                    // Process any remaining data in the buffer
+                    if (buffer.trim() !== '') {
+                        const message = buffer.replace(/^data: /, '');
+                        if (message !== '[DONE]' && message.trim() !== '') {
+                            onChunkReceived(message);
+                        }
+                    }
+                    resolve();
+                });
+
+                readableStream.on('error', (error) => {
+                    // Clear timeout on error
+                    if (readTimeoutId) clearTimeout(readTimeoutId);
+                    console.error('Error reading stream:', error);
+                    reject(error);
+                });
+            });
+        } catch (error) {
+            console.error('Error processing node stream:', error);
+        }
+    }
+
     // A function to process the response stream and invoke the onChunkReceived callback
     // for each valid line in the stream
     async function processStream(reader, decoder, onChunkReceived) {
@@ -175,12 +260,21 @@ async function fetchStreamedChat(options, onChunkReceived) {
 
     const response = await fetchChatResponseWithRetry(apiKey, requestOptions, retryCount);
 
-    // Initialize the reader and decoder
-    const reader = response.body.getReader();
+    // Initialize the decoder
     const decoder = new TextDecoder('utf-8');
 
-    // Process the response stream
-    await processStream(reader, decoder, onChunkReceived);
+    // Check if response.body has getReader method (native fetch)
+    if (typeof response.body.getReader === 'function') {
+        // Initialize the reader for native fetch
+        const reader = response.body.getReader();
+        
+        // Process the response stream using getReader
+        await processStream(reader, decoder, onChunkReceived);
+    } else {
+        // Handle node-fetch which doesn't have getReader
+        // Process the stream using Node.js stream methods
+        await processNodeStream(response.body, decoder, onChunkReceived);
+    }
 }
 
 module.exports = { fetchStreamedChat, fetchStreamedChatContent };

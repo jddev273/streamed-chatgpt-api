@@ -6,6 +6,8 @@ A Node.js module for streaming ChatGPT API responses using the OpenAI API. Strea
 
 ChatGPT is an advanced AI language model developed by OpenAI. This module enables you to interact with the ChatGPT API, allowing you to send messages and receive AI-generated responses in real-time. The OpenAI API provides access to various models, including the gpt-3.5-turbo model, which is used by default in this module.
 
+This library works with both native `fetch` (available in Node.js 18+) and `node-fetch` (automatically used as a fallback for older Node.js versions) for maximum compatibility.
+
 ## Usage Example
 
 A simple node web app showing usage of the module with streamed chat can be found here: [Streamed ChatGPT API Usage Example](https://github.com/jddev273/simple-chatgpt-chat-streaming-demo)
@@ -16,6 +18,12 @@ Install using npm:
 
 ```
 npm install streamed-chatgpt-api
+```
+
+The package works with Node.js 18+ (which has native `fetch`) out of the box. For Node.js versions below 18, the package will automatically use `node-fetch` as a fallback. If you need to explicitly use `node-fetch` in your project, you can install it separately:
+
+```
+npm install node-fetch
 ```
 
 ## Usage

@@ -123,4 +123,36 @@ describe('fetchStreamedChat', () => {
 
         expect(response).toContain('Ottawa');
     }, 30000);
+
+    test('should provide reader object in callback for stream control', async () => {
+        expect.assertions(2);
+
+        const testMessage = 'write a short response';
+        let readerObjectReceived = null;
+        let chunkCount = 0;
+
+        await fetchStreamedChat({
+            apiKey,
+            messageInput: testMessage,
+            maxTokens: 10
+        }, (responseChunk, reader) => {
+            chunkCount++;
+            // Verify reader object is provided
+            if (chunkCount === 1) {
+                readerObjectReceived = reader;
+            }
+            
+            // Process the chunk as usual
+            try {
+                const content = JSON.parse(responseChunk).choices[0].delta.content;
+                // We don't need to do anything with content for this test
+            } catch (e) {
+                // Some chunks might not have content, that's okay
+            }
+        });
+
+        // Verify reader object was provided and has cancel method
+        expect(readerObjectReceived).not.toBeNull();
+        expect(typeof readerObjectReceived.cancel).toBe('function');
+    }, 30000);
 });

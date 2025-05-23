@@ -124,8 +124,8 @@ async function fetchStreamedChat(options, onChunkReceived) {
                     return;
                 }
 
-                // Otherwise, invoke the onChunkReceived callback with the message
-                onChunkReceived(message);
+                // Otherwise, invoke the onChunkReceived callback with the message and reader
+                onChunkReceived(message, reader);
             }
 
             // Continue processing the stream recursively

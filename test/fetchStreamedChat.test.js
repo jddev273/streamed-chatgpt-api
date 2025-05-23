@@ -1,12 +1,11 @@
 const { fetchStreamedChat } = require('../index');
 
-if (!process.env.OPENAI_API_KEY) {
-    console.error('You must set the OPENAI_API_KEY environment variable to run tests.');
-    process.exit(1);
-}
+// Check if OPENAI_API_KEY is set
 const apiKey = process.env.OPENAI_API_KEY;
+const hasApiKey = !!apiKey;
 
-describe('fetchStreamedChat', () => {
+// Only run these tests if an API key is provided
+(hasApiKey ? describe : describe.skip)('fetchStreamedChat', () => {
     test('should fetch a chat response with a single message and custom temperature', async () => {
         expect.assertions(1);
 

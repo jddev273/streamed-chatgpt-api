@@ -34,12 +34,18 @@ const apiKey = 'your_api_key_here';
 fetchStreamedChat({
     apiKey,
     messageInput: 'Hello, how are you?',
-}, (responseChunk) => {
+}, (responseChunk, reader) => {
     // get the actual content from the JSON
     const content = JSON.parse(responseChunk).choices[0].delta.content;
     if (content) {
         process.stdout.write(content);
     }
+    
+    // You can also access the reader object to control the stream
+    // For example, cancel the stream based on some condition:
+    // if (someCondition) {
+    //     reader.cancel();
+    // }
 });
 ```
 
@@ -62,6 +68,29 @@ fetchStreamedChat({
     }
 });
 ```
+
+### Stream Control with Reader Object
+
+The callback function in `fetchStreamedChat` receives two parameters: the response chunk and a reader object. The reader object provides control over the stream:
+
+```js
+fetchStreamedChat({
+    apiKey,
+    messageInput: 'Tell me a long story',
+}, (responseChunk, reader) => {
+    const content = JSON.parse(responseChunk).choices[0].delta.content;
+    if (content) {
+        process.stdout.write(content);
+        
+        // Cancel the stream if we've received enough content
+        if (content.includes('The End')) {
+            reader.cancel();
+        }
+    }
+});
+```
+
+The reader object has a `cancel()` method that allows you to stop the stream at any point during processing.
 
 ### Using fetchStreamedChatContent
 

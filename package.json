@@ -3,6 +3,12 @@
   "version": "1.0.8",
   "description": "A simple module for the server-side allowing you to connect to the ChatGPT and receive the response back in chunks so you can stream the response to the user.",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    }
+  },
   "scripts": {
     "test": "jest"
   },

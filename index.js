@@ -11,9 +11,22 @@ async function fetchStreamedChatContent(options, onResponse = null, onFinish = n
         await fetchStreamedChat(
             options,
             (responseChunk) => {
-                const content = JSON.parse(responseChunk).choices[0].delta.content;
-                if (content && onResponse) {
-                    onResponse(content);
+                try {
+                    const parsedResponse = JSON.parse(responseChunk);
+                    // Check if the expected structure exists
+                    if (parsedResponse.choices && 
+                        parsedResponse.choices[0] && 
+                        parsedResponse.choices[0].delta && 
+                        parsedResponse.choices[0].delta.content) {
+                        
+                        const content = parsedResponse.choices[0].delta.content;
+                        if (onResponse) {
+                            onResponse(content);
+                        }
+                    }
+                } catch (parseError) {
+                    // Silently handle JSON parse errors to prevent stream interruption
+                    console.error('Error parsing response chunk:', parseError);
                 }
             }
         );
